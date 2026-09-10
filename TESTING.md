@@ -2,31 +2,42 @@
 
 Validated on 10 September 2026.
 
-## Repeatable offline checks
+## Repeatable checks
 
-Run `node build.cjs`, then `node test.cjs`. No packages need to be installed.
+Run `node build.cjs`, `node test.cjs`, and `node --test server.test.cjs`. No packages need to be installed. Node.js 22 or newer is required for the local app.
 
-The tests execute the actual JavaScript embedded in the downloadable HTML with a minimal DOM/storage harness. They cover:
+The offline tests execute the JavaScript embedded in the actual HTML with a minimal DOM/storage harness. They cover:
 
-- 120 unique questions, four distinct choices each, six groups of 20, and eight questions per topic.
-- JavaScript syntax and absence of external asset dependencies or network requests.
-- Rejection of incomplete submissions without losing selected answers.
-- Persistence and restoration of answers, scores, and the selected view.
-- A mixed 108/120 attempt, plus all-correct and all-incorrect attempts.
-- Topic totals, percentages, submitted-only grading, and locked graded answers.
-- Text report contents, new attempts, invalid saved data, and blocked browser storage.
+- 120 unique starter questions, four choices each, six groups of 20, and eight questions per starter topic.
+- Syntax and the absence of external assets or direct browser-to-provider API calls.
+- Incomplete submissions, persisted answers, a mixed 108/120 attempt, and 0% and 100% attempts.
+- Topic totals, submitted-only grading, locked answers, reports, reset, corrupt data, and blocked storage.
+- Generated 20-question quizzes, library restoration, and independent progress when switching between the starter and generated quizzes.
+
+The server tests use simulated provider responses; they make no paid API calls. All six tests passed:
+
+- Model, output-token cap, strict structured output, and disabled response storage.
+- Response parsing, preserved correct answers after shuffling, and usage-based cost estimates.
+- Rejection of duplicate, incomplete, malformed, and refused responses.
+- Sanitized authentication, rate-limit, and timeout errors; no automatic retries.
+- Local host/origin/token checks, request validation, and blocked access to source files and secrets.
+- Blocking a second generation while another is running.
 
 ## Browser checks
 
-The same standalone HTML was served locally for browser interaction tests. Direct `file://` navigation is restricted by the testing browser, so that navigation mode could not be exercised there. The HTML contains no imports, remote resources, or server calls.
+The real app was opened locally. A separate local test server supplied a clearly labeled fixture instead of contacting OpenAI, allowing the complete generation flow to be tested without an API key or charge:
 
-- Selected all 20 answers in one group, reloaded, and confirmed all selections persisted.
-- Submitted the group and verified the expected 5/20 (25%) result.
-- Checked total score, topic breakdown, incomplete-group treatment, and 15 missed-question entries.
-- Expanded a missed question and verified the selected answer, correct answer, and explanation.
-- Exercised report generation and the download button without console errors. The browser automation download-event hook did not confirm completion; text report contents are checked by the offline test.
-- Checked cancel and confirm paths for starting a new attempt; confirmed scores reset.
-- Verified the optional read-only report tool returns the visible scores and rejects invalid input.
-- Inspected desktop and narrow-screen layouts.
+- Create a quiz, enter a subject/difficulty, and generate 20 questions.
+- Answer all 20 questions, submit, and open the report.
+- Verify per-quiz totals and topic results, then switch to My quizzes.
+- Reload and confirm the generated quiz and its score remain in the library.
+- Simulate a provider rate-limit/billing error and verify existing quizzes remain intact.
+- Return to the real app and confirm API-key setup is available.
 
-This is functional validation, not a claim of exhaustive browser compatibility or a formal accessibility audit.
+The original quiz also passed browser checks for answer persistence, incomplete submission, wrong-answer explanations, reset confirmation, keyboard answering, and desktop/narrow layouts. Report text is covered by offline tests; the original browser download-event hook did not confirm download completion.
+
+## Limits
+
+No real OpenAI key was configured, so live provider access and the factual quality of generated quizzes have not been verified. Enter your key in the app to generate your first real quiz. API credit and model availability depend on your account.
+
+The testing browser blocks direct `file://` navigation. Browser interaction tests used the same HTML served locally. This is functional validation, not exhaustive browser compatibility or a formal accessibility audit.

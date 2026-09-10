@@ -13,17 +13,17 @@ for(let g=0;g<6;g++)assert.equal(questions.filter(q=>q.group===g).length,20);
 for(const topic of new Set(questions.map(q=>q.topic)))assert.equal(questions.filter(q=>q.topic===topic).length,8);
 for(const q of questions){assert.equal(q.options.length,4);assert.equal(new Set(q.options).size,4);assert.ok(q.correct>=0&&q.correct<4);assert.ok(q.explanation.length>50);}
 assert.ok(!/<(?:script|link|img)[^>]+(?:src|href)=["']https?:/i.test(html));
-assert.ok(!/\bfetch\s*\(|XMLHttpRequest|WebSocket\s*\(/.test(script));
+assert.ok(!script.includes('api.openai.com')); // Provider credentials are handled only by the local server.
 new vm.Script(script);
-function launch({stored=null,blocked=false}={}){
+function launch({stored=null,blocked=false,records=null}={}){
   const elements=new Map();
   const element=id=>{if(!elements.has(id))elements.set(id,{textContent:id==='question-data'?data:'',innerHTML:'',style:{},focus(){},setAttribute(){},showModal(){},close(){}});return elements.get(id);};
-  const listeners={};let record=stored;
+  const listeners={};const savedRecords=records||new Map(stored?[['learning-lab.interview.v1',stored]]:[]);
   const document={getElementById:element,querySelector:()=>({focus(){}}),addEventListener:(event,fn)=>listeners[event]=fn};
-  const localStorage={getItem:()=>{if(blocked)throw Error('Storage blocked');return record;},setItem:(k,v)=>{if(blocked)throw Error('Storage blocked');record=v;}};
+  const localStorage={getItem:k=>{if(blocked)throw Error('Storage blocked');return savedRecords.get(k)||null;},setItem:(k,v)=>{if(blocked)throw Error('Storage blocked');savedRecords.set(k,v);}};
   const context=vm.createContext({document,localStorage,window:{scrollTo(){}},console,Blob,URL,setTimeout});
   vm.runInContext(script,context);
-  return{run:code=>vm.runInContext(code,context),element,saved:()=>record};
+  return{run:code=>vm.runInContext(code,context),element,saved:()=>savedRecords.get('learning-lab.interview.v1'),records:savedRecords};
 }
 let app=launch();
 assert.equal(app.run('stats().graded.length'),0);
@@ -73,3 +73,15 @@ app=launch({stored:JSON.stringify({version:1,answers:{1:99},submitted:[true],gro
 assert.equal(app.run('answered(0)'),0);assert.equal(app.run('state.group'),0);assert.equal(app.run('state.submitted[0]'),false);
 console.log('PASS: 120 unique questions, 6×20 grouping, 15×8 topic balance, standalone assets and syntax.');
 console.log('PASS: incomplete submission, persisted answers, 108/120 mixed score, 0% and 100%, topic totals, answer locking, report, reset, corrupt and blocked storage.');
+app=launch();
+app.run("state.answers[1]=0;save();library.quizzes.push({id:'quiz-test',title:'Astronomy',questions:DEFAULT_QUESTIONS.slice(0,20)});persistLibrary();switchQuiz('quiz-test')");
+assert.equal(app.run('QUESTIONS.length'),20);assert.equal(app.run('GROUP_COUNT'),1);
+assert.equal(app.run('answered(0)'),0);
+app.run('groupQuestions(0).forEach(q=>state.answers[q.id]=q.correct);submitGroup();goReport()');
+assert.equal(app.run('stats().total'),20);assert.equal(app.run('stats().percentage'),100);
+assert.ok(app.element('main').innerHTML.includes('All groups are complete'));
+app=launch({records:app.records});assert.equal(app.run('quizTitle()'),'Astronomy');assert.equal(app.run('stats().total'),20);
+app.run("switchQuiz('interview')");assert.equal(app.run('QUESTIONS.length'),120);assert.equal(app.run('answered(0)'),1);
+app.run("switchQuiz('quiz-test')");assert.equal(app.run('stats().total'),20);
+assert.ok(!JSON.stringify([...app.records]).includes('apiKey'));
+console.log('PASS: generated 20-question quizzes, separate progress, library restoration, and original quiz migration.');

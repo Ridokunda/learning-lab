@@ -7,3 +7,5 @@ playwright-report/
 test-results/
 .DS_Store
 Thumbs.db
+.local/
+learning-lab-backup-*.json
