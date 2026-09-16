@@ -1,0 +1,32 @@
+{
+  "name": "learning-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.cjs && vite build",
+    "dev": "npm run build && wrangler dev",
+    "test": "node test.cjs && node --test server.test.cjs tests/*.test.js",
+    "deploy": "npm run build && wrangler deploy",
+    "db:local": "wrangler d1 migrations apply learning-lab --local",
+    "db:remote": "wrangler d1 migrations apply learning-lab --remote",
+    "test:browser": "playwright test",
+    "check:worker": "wrangler deploy --dry-run",
+    "format": "prettier --write web shared worker tests vite.config.js playwright.config.js"
+  },
+  "dependencies": {
+    "jose": "^6.1.0",
+    "mammoth": "^1.10.0",
+    "pdfjs-dist": "^6.2.108",
+    "ts-fsrs": "^5.2.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.0",
+    "wrangler": "^4.36.0",
+    "@playwright/test": "^1.55.0",
+    "prettier": "^3.6.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

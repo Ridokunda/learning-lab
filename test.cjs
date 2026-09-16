@@ -84,4 +84,10 @@ app=launch({records:app.records});assert.equal(app.run('quizTitle()'),'Astronomy
 app.run("switchQuiz('interview')");assert.equal(app.run('QUESTIONS.length'),120);assert.equal(app.run('answered(0)'),1);
 app.run("switchQuiz('quiz-test')");assert.equal(app.run('stats().total'),20);
 assert.ok(!JSON.stringify([...app.records]).includes('apiKey'));
+const migration=JSON.parse(app.run('JSON.stringify(localBackup())'));
+assert.equal(migration.kind,'learning-lab-local');
+assert.equal(migration.progress.interview.answers[1],0);
+assert.equal(migration.progress['quiz-test'].submitted[0],true);
+assert.equal(migration.quizzes[0].questions.length,20);
+assert.ok(!JSON.stringify(migration).includes('apiKey'));
 console.log('PASS: generated 20-question quizzes, separate progress, library restoration, and original quiz migration.');

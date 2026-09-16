@@ -1,0 +1,3 @@
+# Local only: copy to .dev.vars (ignored by Git).
+# Leave blank to study without paid generation.
+OPENAI_API_KEY=

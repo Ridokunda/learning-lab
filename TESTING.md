@@ -1,43 +1,22 @@
-# Validation
+# Verification
 
-Validated on 10 September 2026.
+Checked locally on 16 September 2026 with Node 24 and headless Microsoft Edge. Simulated provider responses incur no API charges.
 
-## Repeatable checks
+## Checks
 
-Run `node build.cjs`, `node test.cjs`, and `node --test server.test.cjs`. No packages need to be installed. Node.js 22 or newer is required for the local app.
+- `npm run build`: preserved standalone quiz plus Vite client; local PDF.js/Mammoth assets load only when needed.
+- `npm test`: original scoring/state regressions and six original API tests, plus all-format validation, FSRS ratings/idempotency, timezone boundary, migration, JWT verification, real SQLite concurrency/budget/failure tests, and backup restoration.
+- `npm run test:browser`: generation/study flow, scheduled/free practice, locked answers after reload, recall autosave, saved feedback, manual cards, second-browser persistence, backup download, narrow layout, and document extraction/error handling.
+- `npm run check:worker`: Cloudflare bundle dry run, previews disabled and assets routed through authentication.
+- `npm run db:local` and `node tests/local-runtime.mjs` against Wrangler: actual workerd/D1 persistence, repeated review submission, stale conflicts, and atomic backup/ledger restore.
+- Dependency audit: patched PDF.js installed; zero reported advisories at verification.
 
-The offline tests execute the JavaScript embedded in the actual HTML with a minimal DOM/storage harness. They cover:
+`tests/db.js` uses actual SQLite transactions, so SQL constraints and rollback are exercised. The browser fixture server binds localhost and is not deployed.
 
-- 120 unique starter questions, four choices each, six groups of 20, and eight questions per starter topic.
-- Syntax and the absence of external assets or direct browser-to-provider API calls.
-- Incomplete submissions, persisted answers, a mixed 108/120 attempt, and 0% and 100% attempts.
-- Topic totals, submitted-only grading, locked answers, reports, reset, corrupt data, and blocked storage.
-- Generated 20-question quizzes, library restoration, and independent progress when switching between the starter and generated quizzes.
+## Remaining verification
 
-The server tests use simulated provider responses; they make no paid API calls. All six tests passed:
+The Worker is deployed and the remote D1 migration succeeded. After dashboard Access setup, signed-out requests to the root, a compiled asset, the library API, and generation API all redirect to the configured Access team. The application audience was verified against Cloudflare-signed redirect metadata and configured in the Worker. The OpenAI key is now installed and verified as a Worker secret. Verification did not call OpenAI. The Access team domain is configured, but Cloudflare returned 403 for application creation and identity-provider configuration using Wrangler credentials. The owner subsequently completed dashboard setup; the application does not appear in the Wrangler-scoped app listing, so policy details could not be independently inspected. Live Access OTP login/logout, authenticated remote persistence, a second physical device, and production Free-plan CPU/quota behavior remain unverified. Subscription inspection was also denied; no plan upgrade was requested. JWT tests cover signatures, issuer/audience, expiry/missing expiry, tampering, and email. Follow [DEPLOYMENT.md](DEPLOYMENT.md).
 
-- Model, output-token cap, strict structured output, and disabled response storage.
-- Response parsing, preserved correct answers after shuffling, and usage-based cost estimates.
-- Rejection of duplicate, incomplete, malformed, and refused responses.
-- Sanitized authentication, rate-limit, and timeout errors; no automatic retries.
-- Local host/origin/token checks, request validation, and blocked access to source files and secrets.
-- Blocking a second generation while another is running.
+The production OpenAI secret is configured, but no real provider requests were made during verification: live model access, provider billing, and factual accuracy remain unverified. Structural checks do not establish factual correctness.
 
-## Browser checks
-
-The real app was opened locally. A separate local test server supplied a clearly labeled fixture instead of contacting OpenAI, allowing the complete generation flow to be tested without an API key or charge:
-
-- Create a quiz, enter a subject/difficulty, and generate 20 questions.
-- Answer all 20 questions, submit, and open the report.
-- Verify per-quiz totals and topic results, then switch to My quizzes.
-- Reload and confirm the generated quiz and its score remain in the library.
-- Simulate a provider rate-limit/billing error and verify existing quizzes remain intact.
-- Return to the real app and confirm API-key setup is available.
-
-The original quiz also passed browser checks for answer persistence, incomplete submission, wrong-answer explanations, reset confirmation, keyboard answering, and desktop/narrow layouts. Report text is covered by offline tests; the original browser download-event hook did not confirm download completion.
-
-## Limits
-
-No real OpenAI key was configured, so live provider access and the factual quality of generated quizzes have not been verified. Enter your key in the app to generate your first real quiz. API credit and model availability depend on your account.
-
-The testing browser blocks direct `file://` navigation. Browser interaction tests used the same HTML served locally. This is functional validation, not exhaustive browser compatibility or a formal accessibility audit.
+The current library is one bounded 1.5 MB D1 document loaded online. This is not a large-library performance certification, offline synchronization, or exhaustive accessibility/browser audit. Mixed-session queues are transient; completed work is saved.
