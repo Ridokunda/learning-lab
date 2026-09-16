@@ -22,5 +22,6 @@
   "vars": {
     "ACCESS_AUD": "40cbd51907388de849d0282de5402463380a945b9845e5c0918a9416916906f4",
     "ACCESS_TEAM_DOMAIN": "still-salad-cf3b.cloudflareaccess.com",
+    "ALLOWED_EMAIL": "ridokundanetshi@gmail.com",
   },
 }

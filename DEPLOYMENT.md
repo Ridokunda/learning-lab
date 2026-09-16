@@ -10,6 +10,8 @@ Wrangler credentials can list Access applications but Cloudflare denied applicat
 
 ## Provision and publish
 
+`ALLOWED_EMAIL` has been restored to `ridokundanetshi@gmail.com` in local `wrangler.jsonc`. Keep it configured alongside the Access team and audience: the Worker requires all three even when Access protects the hostname. This local correction did not redeploy production. See [Project Documentation](PROJECT_DOCUMENTATION.md#14-deployment-and-operations).
+
 1. Use Node 24+, run `npm ci`, and authenticate with `npx wrangler login`.
 2. Keep **Workers Free** and select **Zero Trust Free** for Access. Do not subscribe to Workers Paid, use temporary preview accounts, or enable paid upgrades. Subscription selection is an account setting the application cannot enforce.
 3. Run `npx wrangler d1 create learning-lab`. Put its database ID in `wrangler.jsonc`; keep the `DB` binding and database name.

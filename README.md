@@ -2,6 +2,8 @@
 
 A private, mobile-friendly learning library with flashcards, quizzes, lessons, and written recall. Generation and AI answer feedback are explicit paid actions. Opening the app, studying, searching, reviewing, and editing cards never call OpenAI.
 
+For the complete architecture, functionality, technology stack, data model, API, security, and maintenance guide, see [Project Documentation](PROJECT_DOCUMENTATION.md).
+
 ## Run the new app locally
 
 Use **Node.js 24 or newer**. The original Windows launcher still opens the legacy quiz for migration.
