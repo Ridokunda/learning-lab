@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { randomBytes, randomInt, timingSafeEqual } = require('node:crypto');
 
-const MODEL = 'gpt-5-nano';
+const MODEL = 'gpt-6-luna';
 const PRICE = { input: 0.05, output: 0.40, checked: '2026-09-10' };
 const MAX_OUTPUT = 12000;
 class AppError extends Error { constructor(status, message) { super(message); this.status = status; } }
