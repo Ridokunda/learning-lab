@@ -7,12 +7,12 @@ const response=(body,status=200)=>new Response(JSON.stringify(body),{status,head
 const key='sk-test-placeholder-not-a-real-api-key';
 test('request uses the cheap model, structured outputs, bounded output, and disabled storage',()=>{
  const p=requestPayload({topic:'Astronomy',difficulty:'beginner',focus:'Stars'});
- assert.equal(p.model,'gpt-5-nano');assert.equal(p.store,false);assert.equal(p.max_output_tokens,12000);assert.equal(p.text.format.strict,true);assert.equal(p.text.format.schema.properties.questions.minItems,20);
+ assert.equal(p.model,'gpt-6-luna');assert.equal(p.reasoning.effort,'low');assert.equal(p.store,false);assert.equal(p.max_output_tokens,12000);assert.equal(p.text.format.strict,true);assert.equal(p.text.format.schema.properties.questions.minItems,20);
 });
 test('generation parses API output, preserves answer correctness after shuffling, and computes cost',async()=>{
  let calls=0;
  const q=await generate({topic:'Astronomy',difficulty:'beginner',focus:''},key,async(url,options)=>{calls++;assert.equal(url,'https://api.openai.com/v1/responses');assert.equal(options.headers.Authorization,'Bearer '+key);return response(envelope(sample()));});
- assert.equal(calls,1);assert.equal(q.questions.length,20);assert.equal(q.usage.estimatedCost,0.0025);
+ assert.equal(calls,1);assert.equal(q.questions.length,20);assert.equal(q.usage.estimatedCost,0.0032);
  for(const row of q.questions)assert.equal(row.options[row.correct],'A star emits light');
  assert.ok(!JSON.stringify(q).includes(key));
 });

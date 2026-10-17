@@ -126,7 +126,7 @@ Versions below are the versions resolved in `package-lock.json` at this document
 | Cloudflare D1 | SQLite-compatible service | Library and AI accounting persistence |
 | Cloudflare Access | Owner email login | Private access to the production hostname |
 | Wrangler | 4.132.0 | Local Worker runtime, D1 migrations, deployment, secret management |
-| OpenAI Responses API | `gpt-5-nano` | User-triggered educational content and recall feedback |
+| OpenAI Responses API | `gpt-6-luna` | User-triggered educational content and recall feedback |
 | Zod | 4.6.5 | Runtime input, output, and library validation |
 | jose | 6.2.12 | Access JWT signature and claim verification using remote JWKS |
 | ts-fsrs | 5.4.2 | Flashcard spaced-repetition scheduling |
@@ -344,7 +344,7 @@ The browser API wrapper uses `redirect: 'error'`. An expired Access session is p
 
 ### 7.1 Provider contract
 
-`shared/generation.js` specifies `gpt-5-nano`, `store: false`, minimal reasoning, strict JSON-schema output, and a cap of 16,000 output tokens for packs or 2,000 for feedback. `worker/ai.js` sends one request to `https://api.openai.com/v1/responses`, with a 120-second timeout and a 1,000,000-byte response limit.
+`shared/generation.js` specifies `gpt-6-luna`, `store: false`, low reasoning, strict JSON-schema output, and a cap of 16,000 output tokens for packs or 2,000 for feedback. `worker/ai.js` sends one request to `https://api.openai.com/v1/responses`, with a 120-second timeout and a 1,000,000-byte response limit.
 
 The schema contains only selected formats and requires exact item counts. A second application-side validation pass checks lengths, answer indexes, distinct options, and duplicate prompts/fronts. A refusal, incomplete response, malformed JSON, or invalid content is rejected. Validation establishes structure, not factual correctness.
 
@@ -362,7 +362,7 @@ The current code uses these USD estimates per million tokens:
 
 | Input tokens | Output tokens |
 | --- | --- |
-| $0.05 | $0.40 |
+| $0.10 | $0.50 |
 
 These are application constants, not a promise of future provider pricing. They must be checked when changing the model or updating billing assumptions.
 
@@ -370,8 +370,8 @@ These are application constants, not a promise of future provider pricing. They 
 reservation = 0.10 USD per AI request (pack generation or recall feedback)
 
 usage estimate =
-  (reported_input_tokens × 0.05
-   + reported_output_tokens × 0.40) / 1,000,000
+  (reported_input_tokens × 0.10
+   + reported_output_tokens × 0.50) / 1,000,000
 
 monthly used/reserved = SUM(cost when known, otherwise reserved)
 ```

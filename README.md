@@ -37,7 +37,7 @@ Version 2 backups include content, sources, schedules/reviews, quiz attempts/dra
 
 The Worker validates Access JWT signatures, issuer, audience, expiry, and the allowed email before serving assets or APIs. Missing configuration fails closed. Preview URLs are disabled. Writes require same-origin JSON requests.
 
-Generation retains `gpt-5-nano`, strict structured output, `store: false`, minimal reasoning, and bounded output: 16,000 tokens per pack, 2,000 for feedback. No automatic retries. Estimates use $0.05/million input and $0.40/million output tokens from the [official model documentation](https://developers.openai.com/api/docs/models/gpt-5-nano). Provider billing is authoritative; `store: false` does not override other provider retention policies.
+Generation retains `gpt-6-luna`, strict structured output, `store: false`, low reasoning, and bounded output: 16,000 tokens per pack, 2,000 for feedback. No automatic retries. Estimates use $0.10/million input and $0.50/million output tokens from the [official model documentation](https://developers.openai.com/api/docs/models/gpt-6-luna). Provider billing is authoritative; `store: false` does not override other provider retention policies.
 
 The default monthly app budget is **US $5**. One atomic SQL statement reserves **US $0.10** before each paid call, including pack generation and recall feedback. A unique partial index serializes AI calls across devices. Usage reconciles the reservation even if content validation fails; unknown usage retains it. After ten minutes, an interrupted request can be acknowledged in Settings without removing its reservation. Subsequent retries remain explicit. This budget covers this app, not other account activity.
 

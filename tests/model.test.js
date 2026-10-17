@@ -143,10 +143,12 @@ test("provider never retries and uses bounded structured requests", async () => 
   const body = payload(input);
   assert.equal(body.store, false);
   assert.equal(body.model, "gpt-6-luna");
+  assert.equal(body.reasoning.effort, "low");
+  assert.equal(payload(input, true).reasoning.effort, "low");
   assert.equal(reservation(body), 0.1);
   assert.equal(
     cost({ usage: { input_tokens: 2000, output_tokens: 6000 } }),
-    0.0025,
+    0.0032,
   );
   assert.equal(cost({}), null);
   let calls = 0;

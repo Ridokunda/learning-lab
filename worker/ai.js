@@ -105,6 +105,6 @@ export function cost(result) {
     u.input_tokens >= 0 &&
     Number.isInteger(u?.output_tokens) &&
     u.output_tokens >= 0
-    ? (u.input_tokens * 0.05 + u.output_tokens * 0.4) / 1e6
+    ? (u.input_tokens * 0.1 + u.output_tokens * 0.5) / 1e6
     : null;
 }
