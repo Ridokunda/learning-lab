@@ -39,7 +39,7 @@ The Worker validates Access JWT signatures, issuer, audience, expiry, and the al
 
 Generation retains `gpt-5-nano`, strict structured output, `store: false`, minimal reasoning, and bounded output: 16,000 tokens per pack, 2,000 for feedback. No automatic retries. Estimates use $0.05/million input and $0.40/million output tokens from the [official model documentation](https://developers.openai.com/api/docs/models/gpt-5-nano). Provider billing is authoritative; `store: false` does not override other provider retention policies.
 
-The default monthly app budget is **US $5**. One atomic SQL statement reserves a conservative maximum before each paid call. A unique partial index serializes AI calls across devices. Usage reconciles the reservation even if content validation fails; unknown usage retains it. After ten minutes, an interrupted request can be acknowledged in Settings without removing its reservation. Subsequent retries remain explicit. This budget covers this app, not other account activity.
+The default monthly app budget is **US $5**. One atomic SQL statement reserves **US $0.10** before each paid call, including pack generation and recall feedback. A unique partial index serializes AI calls across devices. Usage reconciles the reservation even if content validation fails; unknown usage retains it. After ten minutes, an interrupted request can be acknowledged in Settings without removing its reservation. Subsequent retries remain explicit. This budget covers this app, not other account activity.
 
 Generation IDs are persisted before provider calls and bound to an input fingerprint. Repeating an ID returns its status/result. Validated content and success commit atomically. Reconnection never triggers automatic regeneration.
 

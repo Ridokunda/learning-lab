@@ -367,10 +367,7 @@ The current code uses these USD estimates per million tokens:
 These are application constants, not a promise of future provider pricing. They must be checked when changing the model or updating billing assumptions.
 
 ```text
-reservation =
-  (UTF8_bytes_of_request_payload × 0.05
-   + maximum_output_tokens × 0.40) / 1,000,000
-  + 0.001 USD
+reservation = 0.10 USD per AI request (pack generation or recall feedback)
 
 usage estimate =
   (reported_input_tokens × 0.05
@@ -379,7 +376,7 @@ usage estimate =
 monthly used/reserved = SUM(cost when known, otherwise reserved)
 ```
 
-Payload bytes are used as a conservative input allowance, not as an exact tokenizer. Successful responses with usable token counts reconcile the reservation to the usage estimate. Validation failure after usage is received still retains that known cost. When usage is unavailable, the full reservation remains counted.
+The reservation is a fixed budget allowance, not a provider billing cap. Successful responses with usable token counts reconcile the reservation to the usage estimate. Validation failure after usage is received still retains that known cost. When usage is unavailable, the full reservation remains counted. Existing history keeps its original reservation.
 
 The month is assigned when the request starts using the configured timezone. Changing the timezone does not relabel historical ledger records. The app budget covers only requests recorded by this application; it does not control other OpenAI account activity or replace provider billing records.
 

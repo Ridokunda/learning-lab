@@ -28,7 +28,7 @@ export function outputSchema(formats) {
 }
 export function payload(input, feedback = false) {
   return {
-    model: "gpt-5-nano",
+    model: "gpt-6-luna",
     store: false,
     max_output_tokens: feedback ? 2000 : 16000,
     reasoning: { effort: "minimal" },
@@ -46,11 +46,6 @@ export function payload(input, feedback = false) {
     },
   };
 }
-export function reservation(body) {
-  return (
-    (new TextEncoder().encode(JSON.stringify(body)).length * 0.05 +
-      body.max_output_tokens * 0.4) /
-      1e6 +
-    0.001
-  );
+export function reservation() {
+  return 0.1;
 }

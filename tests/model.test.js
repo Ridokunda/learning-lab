@@ -142,8 +142,8 @@ test("mixed practice prioritizes due cards then missed questions", () => {
 test("provider never retries and uses bounded structured requests", async () => {
   const body = payload(input);
   assert.equal(body.store, false);
-  assert.equal(body.model, "gpt-5-nano");
-  assert.ok(reservation(body) > 0.0064);
+  assert.equal(body.model, "gpt-6-luna");
+  assert.equal(reservation(body), 0.1);
   assert.equal(
     cost({ usage: { input_tokens: 2000, output_tokens: 6000 } }),
     0.0025,
